@@ -2,12 +2,28 @@
 
 
 {% block sub_title %}
-{{ item.name }}
+    {{ item.name }}
 {% endblock %}
 
 {% block content %}
-    <img class="img-fluid img-left" src="{{ item.photo.url }}" alt="Dnl">
+    <img class="img-fluid img-left" src="{{ item.photo.url }}" alt="Нет картинки">
+    <p>{{ item.description }}</p>
+    <p class="fw-bold">{{ item.price }} {{ item.currency }}</p>
+    <button type="button" class="btn btn-primary btn-lg" onclick="redirectToCheckout()">Купить!</button>
 
- {{ item.description }}
-    </div>>
+
+    <script>
+     let stripe = Stripe('pk_test_51M52TNDje81dvy6us8xsGSEHc42JNbbcgsAfMnuKUkfqaQWDx1eatjL08RTeWk16zVqETEABAHGbQmMlE9WGWLMV00ZlDaY3zs');
+
+    function redirectToCheckout() {
+        fetch('/buy/{{ item.pk }}/')
+            .then(function (response) {
+                response.json().then(data => stripe.redirectToCheckout({sessionId: data.session_id}))
+            })
+            .catch(function (reason) {
+                alert('Ошибка' + reason)
+            });
+    }
+    </script>
+
 {% endblock %}
